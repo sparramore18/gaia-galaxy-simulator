@@ -37,10 +37,11 @@ The query may take a few seconds as it retrieves data from the online Gaia archi
 
 The script also writes the star coordinates to `gaia_stars.json` and generates an
 interactive HTML file `gaia_3d.html` that uses **three.js** for rendering. The
-HTML file embeds the star data directly and now includes **OrbitControls** so you
-can zoom, pan and rotate the view with the mouse. The file can be opened locally
-without running a web server, and it will open automatically when the simulator
-finishes processing.
+HTML file embeds the star data directly and inlines the required
+**three.js** libraries (including **OrbitControls**) so you can zoom, pan and
+rotate the view even without an internet connection. The file can be opened
+locally without running a web server and will open automatically when the
+simulator finishes processing.
 
 To automatically display the generated image and open the 3‑D viewer in your
 browser, run the helper script:
