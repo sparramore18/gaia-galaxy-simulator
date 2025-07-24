@@ -1,19 +1,19 @@
 # Gaia Galaxy Simulator
 
-This project provides a simple test-particle orbit integration using the `galpy` library in a smooth Milky Way potential. It is meant as a starting point for developing a more realistic galaxy simulator using Gaia data.
+This project provides a simple test-particle orbit integration using the `galpy` library in a smooth Milky Way potential. It also includes a small 3‑D visualisation of real Gaia DR3 stars. The code can serve as a starting point for developing a more realistic galaxy simulator using Gaia data.
 
 ## Requirements
 
 - Python 3.9 or later
-- galpy, numpy, astropy, matplotlib
+- galpy, numpy, astropy, matplotlib, pandas, astroquery
 
 Install the dependencies with pip:
 
-pip install galpy numpy astropy matplotlib
+pip install galpy numpy astropy matplotlib pandas astroquery
 
 Or with conda:
 
-conda install -c conda-forge galpy numpy astropy matplotlib
+conda install -c conda-forge galpy numpy astropy matplotlib pandas astroquery
 
 ## Running
 
@@ -22,6 +22,14 @@ The file `orbit_simulation.py` contains an example of integrating a single test 
 python orbit_simulation.py
 
 It will integrate the orbit for 10 Gyr and plot the orbit in the x–y plane.
+
+The script `gaia_3d_simulator.py` downloads a small sample of stars from Gaia DR3 and shows them in 3‑D Galactocentric coordinates. Run it as:
+
+```bash
+python gaia_3d_simulator.py
+```
+
+The query may take a few seconds as it retrieves data from the online Gaia archive. When finished, a PNG image called `gaia_3d.png` is created in the current directory.
 
 ## Using Visual Studio or VS Code
 
