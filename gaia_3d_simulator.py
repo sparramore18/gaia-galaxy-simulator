@@ -45,7 +45,7 @@ def convert_to_galactocentric(data):
     return gc
 
 
-def plot_3d_stars(gc):
+def plot_3d_stars(gc, show=False):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
     ax.scatter(gc.x, gc.y, gc.z, s=1, alpha=0.5)
@@ -54,14 +54,16 @@ def plot_3d_stars(gc):
     ax.set_zlabel('Z [kpc]')
     ax.set_title('Gaia DR3 Stars in Galactocentric Coordinates')
     plt.savefig("gaia_3d.png")
+    if show:
+        plt.show()
     plt.close()
     print("Saved plot to gaia_3d.png")
 
 
-def main():
+def main(show=False):
     data = fetch_gaia_data()
     gc = convert_to_galactocentric(data)
-    plot_3d_stars(gc)
+    plot_3d_stars(gc, show=show)
 
 
 if __name__ == '__main__':

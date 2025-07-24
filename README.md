@@ -31,6 +31,12 @@ python gaia_3d_simulator.py
 
 The query may take a few seconds as it retrieves data from the online Gaia archive. When finished, a PNG image called `gaia_3d.png` is created in the current directory.
 
+To automatically display the generated image, run the helper script:
+
+```bash
+python start_app.py
+```
+
 ## Using Visual Studio or VS Code
 
 1. Clone this repository and open it in Visual Studio or VS Code.
