@@ -87,6 +87,9 @@ def generate_threejs_html(gc, html_file="gaia_3d.html"):
         "z": gc.z.to(u.kpc).value.tolist(),
     }
 
+    max_radius = (gc.x**2 + gc.y**2 + gc.z**2) ** 0.5
+    max_radius = max_radius.to(u.kpc).max().value
+
     json_data = json.dumps(data)
 
     html = f"""<!DOCTYPE html>
@@ -118,7 +121,8 @@ geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3))
 const material = new THREE.PointsMaterial({{ color: 0xffffff, size: 0.05 }});
 const points = new THREE.Points(geometry, material);
 scene.add(points);
-camera.position.z = 2;
+camera.position.set(0, 0, {max_radius:.2f});
+camera.lookAt(new THREE.Vector3(0, 0, 0));
 function animate() {{
     requestAnimationFrame(animate);
     points.rotation.y += 0.0005;
