@@ -1,0 +1,10 @@
+# Dependencies for Gaia Galaxy Simulator
+# Install using: pip install -r requirements.txt
+
+galpy
+numpy
+astropy
+matplotlib
+pandas
+astroquery
+requests

@@ -5,15 +5,19 @@ This project provides a simple test-particle orbit integration using the `galpy`
 ## Requirements
 
 - Python 3.9 or later
-- galpy, numpy, astropy, matplotlib, pandas, astroquery
+- `galpy`, `numpy`, `astropy`, `matplotlib`, `pandas`, `astroquery`, `requests`
 
-Install the dependencies with pip:
+Install the dependencies using the provided requirements file:
 
-pip install galpy numpy astropy matplotlib pandas astroquery
+```bash
+pip install -r requirements.txt
+```
 
 Or with conda:
 
-conda install -c conda-forge galpy numpy astropy matplotlib pandas astroquery
+```bash
+conda install -c conda-forge galpy numpy astropy matplotlib pandas astroquery requests
+```
 
 ## Running
 
@@ -42,8 +46,9 @@ python start_app.py
 1. Clone this repository and open it in Visual Studio or VS Code.
 2. Select a Python interpreter (version 3.9+).
 3. (Optional) Create a virtual environment with `python -m venv .venv` and activate it.
-4. Install the dependencies as listed above.
-5. Run `orbit_simulation.py` via the Run/Debug panel or by pressing F5.
+4. Install the dependencies with `pip install -r requirements.txt`.
+5. In the Solution Explorer, right-click `start_app.py` (or `orbit_simulation.py`) and choose **Set as Startup File**.
+6. Press F5 or use the Run/Debug panel to launch the simulator.
 
 ## Next Steps
 
