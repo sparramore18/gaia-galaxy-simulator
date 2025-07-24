@@ -73,12 +73,20 @@ def save_star_data_json(gc, filename="gaia_stars.json"):
     print(f"Saved star coordinates to {filename}")
 
 
-def generate_threejs_html(gc, html_file="gaia_3d.html"):
+def generate_threejs_html(gc, html_file="gaia_3d.html", embed_libs=True):
     """Generate a minimal three.js viewer for the star data.
 
-    The star coordinates are embedded directly in the HTML so that it can be
-    opened locally without needing an HTTP server. This avoids browsers blocking
-    ``file://`` fetch requests.
+    Parameters
+    ----------
+    gc : `~astropy.coordinates.SkyCoord`
+        Coordinates in the Galactocentric frame.
+    html_file : str, optional
+        Output HTML filename.
+    embed_libs : bool, optional
+        If ``True``, the required ``three.js`` libraries are downloaded and
+        embedded directly in the HTML. This allows the viewer to work without
+        an internet connection. When ``False`` the libraries are loaded from a
+        CDN as before.
     """
 
     data = {
@@ -92,6 +100,29 @@ def generate_threejs_html(gc, html_file="gaia_3d.html"):
 
     json_data = json.dumps(data)
 
+    if embed_libs:
+        try:
+            three_js = requests.get(
+                "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js",
+                timeout=30,
+            ).text
+            orbit_js = requests.get(
+                "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/controls/OrbitControls.js",
+                timeout=30,
+            ).text
+            libs = f"<script>{three_js}</script>\n<script>{orbit_js}</script>"
+        except Exception as exc:
+            print(f"Warning: failed to download three.js libraries: {exc}")
+            libs = (
+                "<script src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'></script>\n"
+                "<script src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/controls/OrbitControls.js'></script>"
+            )
+    else:
+        libs = (
+            "<script src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'></script>\n"
+            "<script src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/controls/OrbitControls.js'></script>"
+        )
+
     html = f"""<!DOCTYPE html>
 <html lang='en'>
 <head>
@@ -100,8 +131,7 @@ def generate_threejs_html(gc, html_file="gaia_3d.html"):
     <style>body {{ margin: 0; }}</style>
 </head>
 <body>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/controls/OrbitControls.js"></script>
+{libs}
 <script>
 const data = {json_data};
 
