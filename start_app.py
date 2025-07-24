@@ -9,4 +9,4 @@ imports :func:`main` from :mod:`gaia_3d_simulator` and executes it with
 from gaia_3d_simulator import main
 
 if __name__ == "__main__":
-    main(show=True)
+    main(show=True, open_browser=True)

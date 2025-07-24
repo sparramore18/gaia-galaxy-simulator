@@ -37,11 +37,13 @@ The query may take a few seconds as it retrieves data from the online Gaia archi
 
 The script also writes the star coordinates to `gaia_stars.json` and generates an
 interactive HTML file `gaia_3d.html` that uses **three.js** for rendering. The
-HTML file now embeds the star data directly, so it can be opened locally without
-running a web server. Just open `gaia_3d.html` in a browser to explore the stars
-in 3‑D.
+HTML file embeds the star data directly and now includes **OrbitControls** so you
+can zoom, pan and rotate the view with the mouse. The file can be opened locally
+without running a web server, and it will open automatically when the simulator
+finishes processing.
 
-To automatically display the generated image, run the helper script:
+To automatically display the generated image and open the 3‑D viewer in your
+browser, run the helper script:
 
 ```bash
 python start_app.py
