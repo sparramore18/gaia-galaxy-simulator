@@ -68,7 +68,7 @@ def save_star_data_json(gc, filename="gaia_stars.json"):
         "y": gc.y.to(u.kpc).value.tolist(),
         "z": gc.z.to(u.kpc).value.tolist(),
     }
-    with open(filename, "w") as f:
+    with open(filename, "w", encoding="utf-8") as f:
         json.dump(data, f)
     print(f"Saved star coordinates to {filename}")
 
@@ -165,7 +165,7 @@ animate();
 </html>
 """
 
-    with open(html_file, "w") as f:
+    with open(html_file, "w", encoding="utf-8") as f:
         f.write(html)
     print(f"Saved HTML viewer to {html_file}")
 
