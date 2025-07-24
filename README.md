@@ -35,7 +35,11 @@ python gaia_3d_simulator.py
 
 The query may take a few seconds as it retrieves data from the online Gaia archive. When finished, a PNG image called `gaia_3d.png` is created in the current directory.
 
-The script also writes the star coordinates to `gaia_stars.json` and generates an interactive HTML file `gaia_3d.html` that uses **three.js** for rendering. Open the HTML file in a browser to explore the stars in 3‑D.
+The script also writes the star coordinates to `gaia_stars.json` and generates an
+interactive HTML file `gaia_3d.html` that uses **three.js** for rendering. The
+HTML file now embeds the star data directly, so it can be opened locally without
+running a web server. Just open `gaia_3d.html` in a browser to explore the stars
+in 3‑D.
 
 To automatically display the generated image, run the helper script:
 
