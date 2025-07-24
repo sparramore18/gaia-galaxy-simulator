@@ -73,8 +73,22 @@ def save_star_data_json(gc, filename="gaia_stars.json"):
     print(f"Saved star coordinates to {filename}")
 
 
-def generate_threejs_html(json_file="gaia_stars.json", html_file="gaia_3d.html"):
-    """Generate a minimal three.js viewer for the star data."""
+def generate_threejs_html(gc, html_file="gaia_3d.html"):
+    """Generate a minimal three.js viewer for the star data.
+
+    The star coordinates are embedded directly in the HTML so that it can be
+    opened locally without needing an HTTP server. This avoids browsers blocking
+    ``file://`` fetch requests.
+    """
+
+    data = {
+        "x": gc.x.to(u.kpc).value.tolist(),
+        "y": gc.y.to(u.kpc).value.tolist(),
+        "z": gc.z.to(u.kpc).value.tolist(),
+    }
+
+    json_data = json.dumps(data)
+
     html = f"""<!DOCTYPE html>
 <html lang='en'>
 <head>
@@ -85,36 +99,35 @@ def generate_threejs_html(json_file="gaia_stars.json", html_file="gaia_3d.html")
 <body>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'></script>
 <script>
-fetch('{json_file}')
-  .then(r => r.json())
-  .then(data => {{
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
+const data = {json_data};
 
-    const geometry = new THREE.BufferGeometry();
-    const vertices = [];
-    for (let i=0; i<data.x.length; i++) {{
-        vertices.push(data.x[i], data.y[i], data.z[i]);
-    }}
-    geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
-    const material = new THREE.PointsMaterial({{ color: 0xffffff, size: 0.05 }});
-    const points = new THREE.Points(geometry, material);
-    scene.add(points);
-    camera.position.z = 2;
-    function animate() {{
-        requestAnimationFrame(animate);
-        points.rotation.y += 0.0005;
-        renderer.render(scene, camera);
-    }}
-    animate();
-  }});
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+const geometry = new THREE.BufferGeometry();
+const vertices = [];
+for (let i=0; i<data.x.length; i++) {{
+    vertices.push(data.x[i], data.y[i], data.z[i]);
+}}
+geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+const material = new THREE.PointsMaterial({{ color: 0xffffff, size: 0.05 }});
+const points = new THREE.Points(geometry, material);
+scene.add(points);
+camera.position.z = 2;
+function animate() {{
+    requestAnimationFrame(animate);
+    points.rotation.y += 0.0005;
+    renderer.render(scene, camera);
+}}
+animate();
 </script>
 </body>
 </html>
 """
+
     with open(html_file, "w") as f:
         f.write(html)
     print(f"Saved HTML viewer to {html_file}")
@@ -124,7 +137,7 @@ def main(show=False):
     data = fetch_gaia_data()
     gc = convert_to_galactocentric(data)
     save_star_data_json(gc)
-    generate_threejs_html()
+    generate_threejs_html(gc)
     plot_3d_stars(gc, show=show)
 
 
