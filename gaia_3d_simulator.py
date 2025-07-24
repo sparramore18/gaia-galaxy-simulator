@@ -1,19 +1,20 @@
+import io
+import json
 import matplotlib.pyplot as plt
 from astropy import units as u
-from astropy.coordinates import SkyCoord, Galactocentric
-import requests
+from astropy.coordinates import Galactocentric, SkyCoord
 import pandas as pd
-import io
+import requests
 
 
 GAIA_TAP_SYNC = "https://gea.esac.esa.int/tap-server/tap/sync"
 
 
 def fetch_gaia_data(limit=1000):
-    """Fetch a small sample of Gaia DR3 sources using a synchronous TAP query."""
+    """Fetch a random sample of Gaia DR3 sources using a synchronous TAP query."""
     query = (
         f"SELECT TOP {limit} ra, dec, parallax, pmra, pmdec, radial_velocity "
-        "FROM gaiadr3.gaia_source WHERE parallax > 0"
+        "FROM gaiadr3.gaia_source WHERE parallax > 0 ORDER BY random_index"
     )
     params = {
         "REQUEST": "doQuery",
@@ -47,12 +48,12 @@ def convert_to_galactocentric(data):
 
 def plot_3d_stars(gc, show=False):
     fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
+    ax = fig.add_subplot(111, projection="3d")
     ax.scatter(gc.x, gc.y, gc.z, s=1, alpha=0.5)
-    ax.set_xlabel('X [kpc]')
-    ax.set_ylabel('Y [kpc]')
-    ax.set_zlabel('Z [kpc]')
-    ax.set_title('Gaia DR3 Stars in Galactocentric Coordinates')
+    ax.set_xlabel("X [kpc]")
+    ax.set_ylabel("Y [kpc]")
+    ax.set_zlabel("Z [kpc]")
+    ax.set_title("Gaia DR3 Stars in Galactocentric Coordinates")
     plt.savefig("gaia_3d.png")
     if show:
         plt.show()
@@ -60,11 +61,72 @@ def plot_3d_stars(gc, show=False):
     print("Saved plot to gaia_3d.png")
 
 
+def save_star_data_json(gc, filename="gaia_stars.json"):
+    """Save Galactocentric coordinates to a JSON file for use with three.js."""
+    data = {
+        "x": gc.x.to(u.kpc).value.tolist(),
+        "y": gc.y.to(u.kpc).value.tolist(),
+        "z": gc.z.to(u.kpc).value.tolist(),
+    }
+    with open(filename, "w") as f:
+        json.dump(data, f)
+    print(f"Saved star coordinates to {filename}")
+
+
+def generate_threejs_html(json_file="gaia_stars.json", html_file="gaia_3d.html"):
+    """Generate a minimal three.js viewer for the star data."""
+    html = f"""<!DOCTYPE html>
+<html lang='en'>
+<head>
+    <meta charset='utf-8'>
+    <title>Gaia 3D Stars</title>
+    <style>body {{ margin: 0; }}</style>
+</head>
+<body>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'></script>
+<script>
+fetch('{json_file}')
+  .then(r => r.json())
+  .then(data => {{
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    const geometry = new THREE.BufferGeometry();
+    const vertices = [];
+    for (let i=0; i<data.x.length; i++) {{
+        vertices.push(data.x[i], data.y[i], data.z[i]);
+    }}
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+    const material = new THREE.PointsMaterial({{ color: 0xffffff, size: 0.05 }});
+    const points = new THREE.Points(geometry, material);
+    scene.add(points);
+    camera.position.z = 2;
+    function animate() {{
+        requestAnimationFrame(animate);
+        points.rotation.y += 0.0005;
+        renderer.render(scene, camera);
+    }}
+    animate();
+  }});
+</script>
+</body>
+</html>
+"""
+    with open(html_file, "w") as f:
+        f.write(html)
+    print(f"Saved HTML viewer to {html_file}")
+
+
 def main(show=False):
     data = fetch_gaia_data()
     gc = convert_to_galactocentric(data)
+    save_star_data_json(gc)
+    generate_threejs_html()
     plot_3d_stars(gc, show=show)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
