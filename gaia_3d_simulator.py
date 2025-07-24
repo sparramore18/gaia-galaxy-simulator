@@ -98,6 +98,7 @@ def generate_threejs_html(gc, html_file="gaia_3d.html"):
 </head>
 <body>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/controls/OrbitControls.js"></script>
 <script>
 const data = {json_data};
 
@@ -106,6 +107,7 @@ const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHei
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
 
 const geometry = new THREE.BufferGeometry();
 const vertices = [];
@@ -120,6 +122,7 @@ camera.position.z = 2;
 function animate() {{
     requestAnimationFrame(animate);
     points.rotation.y += 0.0005;
+    controls.update();
     renderer.render(scene, camera);
 }}
 animate();
@@ -133,13 +136,16 @@ animate();
     print(f"Saved HTML viewer to {html_file}")
 
 
-def main(show=False):
+def main(show=False, open_browser=False):
     data = fetch_gaia_data()
     gc = convert_to_galactocentric(data)
     save_star_data_json(gc)
     generate_threejs_html(gc)
+    if open_browser:
+        import webbrowser
+        webbrowser.open("gaia_3d.html")
     plot_3d_stars(gc, show=show)
 
 
 if __name__ == "__main__":
-    main()
+    main(open_browser=True)
